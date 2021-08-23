@@ -11,7 +11,6 @@ from django.core.files.storage import default_storage
 # from rest_framework.views import APIView
 
 
-
 @csrf_exempt
 def departmentAPI(request):
     if request.method == "GET":
@@ -55,9 +54,11 @@ def employeeAPI(request):
         return JsonResponse(serializer.data, safe=False)
     elif request.method == "POST":
         data = json.loads(request.body)
-        serializer = EmployeeSerializer(data=data)
+        department = Department.objects.get(department_name=data["department"])
+        data.pop("department")
+        serializer = EmployeeSerializer(data=data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(department=department)
         else:
             return JsonResponse({"Message": "data is not valid"}, safe=False)
         return JsonResponse(serializer.data, safe=False)
@@ -68,9 +69,11 @@ def employeeAPI(request):
         except:
             return JsonResponse({"message": "No id is passed"})
         employee = Employee.objects.get(employee_id=employee_id)
-        serializer = EmployeeSerializer(instance=employee, data=data)
+        department = Department.objects.get(department_name=data["department"])
+        data.pop("department")
+        serializer = EmployeeSerializer(instance=employee, data=data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(department=department)
             return JsonResponse(serializer.data, safe=False)
         return JsonResponse({"Message": "data is not valid"}, safe=False)
     elif request.method == "DELETE":
@@ -84,9 +87,10 @@ def employeeAPI(request):
 
 @csrf_exempt
 def save_file(request):
+    print(request)
     file = request.FILES["myFile"]
+    print(file)
     file_name = default_storage.save(file.name, file)
-
     return JsonResponse(file_name, safe=False)
 
 

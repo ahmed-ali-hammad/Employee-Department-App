@@ -15,9 +15,8 @@ class Department(models.Model):
 class Employee(models.Model):
     employee_id = models.AutoField(primary_key=True)
     employee_name = models.CharField(max_length=100)
-    # department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    department = models.CharField(max_length=100)
-    date_of_joining = models.DateField(auto_now_add=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    date_of_joining = models.DateField()
     photo_file_name = models.CharField(max_length=100)
 
     def __str__(self):
